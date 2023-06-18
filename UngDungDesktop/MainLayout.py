@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtSerialPort import QSerialPort
+from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from BangDieuKhien import Ui_MainWindow
 
 import firebase_admin
@@ -23,9 +23,9 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.port = QSerialPort()
         self.data = QtCore.QByteArray()
-        self.listThongBao = ["tb1$", "tb20$", "tb3$","tb4$", "tb5$", "tb6$","tb21$", "tb7$", "tb8$","tb9$", "tb10$", "tb22$","tb11$","tb12$", "tb13$", "tb14$", "tb15$" ]
+        self.listThongBao = ["tb1$",  "tb3$","tb4$", "tb5$", "tb6$","tb21$", "tb7$", "tb8$","tb9$", "tb10$", "tb22$","tb11$","tb12$", "tb13$", "tb14$", "tb15$" ]
         self.setWindowTitle('BangDieuKhien')
-        
+        print ([port.portName() for port in QSerialPortInfo().availablePorts()])
         self.portOpen()
 
         self.vaoBtn.clicked.connect(lambda: self.sendFromPort("1"))
@@ -41,50 +41,50 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
         self.port.setBaudRate(115200)
         self.port.setPortName('COM7')
         self.port.open(QtCore.QIODevice.ReadWrite)
-  
+        if self.port.isOpen():
+            print("open")
+        else:
+            print("no open")
         
     def readFromPort(self):
-        # if !(self.port.waitForReadyRead(100)):
-        #     self.data.remove(0, len(self.data))
-        #     print(self.data)
         if self.port.waitForReadyRead(100):
             self.data += self.port.readAll()
         
         print("-------------------")
         if len(self.data) > 0:
             inra = self.data.data().decode('utf-8', errors='ignore')
-            print(inra)
 
-            if ("mt" in inra) and (inra.find("$") == 14):
+            if (inra.find("mt")>=0) and (inra.find("$",inra.find("mt")) > 0):
                 print(inra)
-                x = inra[3:14]
+                x = inra[inra.find("mt")+2:inra.find("$",inra.find("mt"))]
                 self.maThe.setText(x)
-                # print("x la " + x)
-                # print(len(inra))
                 self.data.clear()
 
-            if ("sx" in inra) and (inra.find("$") > 0):
-                print(inra)
-                y = inra.strip()[2:3]
+            if (inra.find("sx")>=0) and (inra.find("$", inra.find("sx")) > 0):
+                y = inra[inra.find("sx")+2:inra.find("$", inra.find("sx"))]
                 self.soXe.setText(y)
                 ref.update({"soxe": y})
                 print("y la " + y)
-                # print(len(inra))
                 self.data.clear()
 
-            if ("tt" in inra) and (inra.find("$") > 0):
+            if (inra.find("mx")>=0) and (inra.find("$", inra.find("mx")) > 0):
+                m = inra[inra.find("mx")+2:inra.find("$", inra.find("mx"))]
+                self.maxXe.setText(m)
+                ref.update({"max": m})
+                print("m la " + m)
+                self.data.clear()
+
+            if (inra.find("tt")>=0) and (inra.find("$",inra.find("tt")) > 0):
                 print(inra)
-                z = inra.strip()[2:inra.find("$")-1]
-                # self.ThongBao.setText("Số tiền phải trả:")
+                z = inra[inra.find("tt")+2:inra.find("$")]
                 self.ThongBao2.setText(z + " nghìn đồng")                
                 print("z la " + z)
-                # print(len(inra))
                 self.data.clear()
             
-
+           
             for i in self.listThongBao:
-                if ((i in inra) and (inra.find('$')>0)):
-                    # print("ok" + i)
+                if ((i in inra) and (inra.find('$', inra.find(i))>0)):
+                    print(inra)
                     self.switch(i)
                     self.data.clear()
             print("..................")
@@ -95,14 +95,13 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
             o = self.nhapMax.text()
             ref.update({"max": o})
             print(_str)
-            print(len(_str))
+            # print(len(_str))
             self.maxXe.setText(o)
             self.nhapMax.setText("")
-        else:
+        elif (_str == "max") and (not self.nhapMax.text().isdigit()):
             self.ThongBao.setText("Nhập sai")
             self.ThongBao2.setText(" ")
             print("nhap sai")
-            # time.sleep(1)
             self.nhapMax.setText("")
 
         if _str == "1":
@@ -110,6 +109,8 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
         if _str == "0":
             self.TrangThaiCong.setText("CỔNG RA")
         data = _str.encode("utf-8")
+        self.ThongBao2.setText(" ")
+        self.ThongBao.setText(" ")
         self.port.write(data)
     
     def switch(self, check):
@@ -117,9 +118,9 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
             self.ThongBao.setText("hết chỗ để xe")
             self.ThongBao2.setText(" ")
 
-        elif check == "tb20$":
-            self.ThongBao2.setText("Hết chỗ để xe")
-            self.ThongBao.setText(" ")
+        # elif check == "tb20$":
+        #     self.ThongBao2.setText("Hết chỗ để xe")
+        #     self.ThongBao.setText(" ")
 
         elif check == "tb3$":
             self.ThongBao.setText("Đang đợi nhận thẻ")
@@ -170,11 +171,9 @@ class Main(QtWidgets.QMainWindow, Ui_MainWindow):
             
         elif check == "tb13$":
             self.ThongBao.setText("MỞ CỔNG XE KHÁCH")
-            self.ThongBao2.setText(" ")
             
         elif check == "tb14$":
             self.ThongBao.setText("MỞ CỔNG XE ĐĂNG KÝ")
-            self.ThongBao2.setText(" ")
             
         elif check == "tb15$":
             self.ThongBao2.setText("CẢNH BÁO SAI CỔNG")

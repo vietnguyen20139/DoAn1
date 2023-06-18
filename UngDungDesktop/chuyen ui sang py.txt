@@ -1,0 +1,1 @@
+cmd: pyuic5 BangDieuKhien.ui>BangDieuKhien.py

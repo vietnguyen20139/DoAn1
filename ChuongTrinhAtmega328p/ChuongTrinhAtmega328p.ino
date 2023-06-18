@@ -24,10 +24,10 @@ bool cothe = false;
 bool in1lan;
 
 String strID;
-int maxXe = 2;
+int maxXe = 3;
 int soXe = 0;
 bool isMax = false;
-int len;
+int len;  //do dai cua chuoi tu esp32 gui qua
 
 //tao 2 cau truc de chua the dang ky va the khach
 class dangky {
@@ -61,13 +61,18 @@ void setup() {
   pinMode(7, OUTPUT);
   pinMode(8, OUTPUT);
   myservo.attach(6);
-  myservo.write(90);
+  myservo.write(0);
 
   //tao 1 the da dang ky
   checkDK->ID = "E0:D4:58:19";
 
   //them the vao danh sach dang ky
   listDKy.add(checkDK);
+
+  // Serial.println("Chế độ cổng hiện tại là cổng vào!");
+  Serial.println(" sx" + String(soXe)+"$");
+  Serial.println(" mx" + String(maxXe)+"$");
+  // inMax();
 }
 
 
@@ -81,6 +86,7 @@ void loop() {
     return;
 
   xuLyStr();
+  // Serial.println(" mt" + strID + "$");
 
   // strop reading
   rfid.PICC_HaltA();
@@ -108,10 +114,13 @@ void loop() {
           } else if ((!isMax) && stateCong) {
             checkDK->stateID = stateCong;
             access("dangky");
+            // Serial.println(isMax);
             soXe++;
           } else {
             // Serial.println(" thongbaoCảnh báo hết chỗ để xe! $");
             Serial.println(" tb1$");
+            delay(500);
+
             loa();
           }
         }
@@ -156,18 +165,19 @@ void loop() {
     // Serial.println("da thoat vong lap danh sach khach, the khong co trong danh sach khach");
     //sau khi thoat vong lap tuc la the khong co trong danh sach khach
     if (stateCong) {
-      Serial.println(checkKhach->ID);
+      khach *inKhach = new khach();
       if (!isMax) {
-        checkKhach->ID = strID;
-        checkKhach->vaoCongTime = millis();
+        inKhach->ID = strID;
+        inKhach->vaoCongTime = millis();
         // Serial.println("thêm thẻ " + strID + " vào danh sách khách");
-        listKhach.add(checkKhach);
+        listKhach.add(inKhach);
         access("khach");
         // Serial.println(isMax);
         soXe++;
       } else {
         // Serial.println(" thongbaoCảnh báo hết chỗ để xe! $");
         Serial.println(" tb1$");
+        delay(500);
 
         loa();
         return;
@@ -177,15 +187,19 @@ void loop() {
     // Serial.print("so luong trong danh sach khach ");
     // Serial.println(listKhach.size());
   }
+  delay(200);
   Serial.println(" sx" + String(soXe) + "$");
+  delay(1);
 
   if (soXe == maxXe) {
     // Serial.println(" thongbaoHết chỗ để xe! $");
-    Serial.println(" tb20$");
+    // Serial.println(" tb20$");
+    // delay(1);
 
     isMax = true;
+    // Serial.println(isMax);
+    // return;
   }
-  // delay(1000);
 }
 
 void inMax() {
@@ -200,6 +214,10 @@ void xuLyStr() {
   }
   strID.toUpperCase();
   Serial.println(" mt" + strID + "$");
+  delay(1);
+
+
+  // Serial.println(strID);
 }
 
 bool kiemThe() {
@@ -207,6 +225,8 @@ bool kiemThe() {
   if (in1lan) {
     // Serial.print(" thongbaoĐang đợi nhận thẻ $");
     Serial.println(" tb3$");
+    delay(1);
+
     // Serial.println(stateCong ? "vào" : "ra");
   }
   in1lan = false;
@@ -257,6 +277,7 @@ void dieuKhien() {
 
     // Serial.println(" thongbaoMời quét thẻ trong 3s! $");
     Serial.println(" tb4$");
+    delay(1);
 
     getTime = millis();
     while ((unsigned long)(millis() - getTime) < 3000) {
@@ -300,6 +321,7 @@ void dieuKhien() {
       if (inKhach || inDky) {
         // Serial.println(" thongbao2Trạng thái thẻ không phù hợp để thêm vào danh sách đăng ký $");
         Serial.println(" tb21$");
+        delay(1);
 
       } else {
         dangky *addDK = new dangky();
@@ -308,17 +330,23 @@ void dieuKhien() {
         listDKy.add(addDK);
         // Serial.println(" thongbaothêm thẻ " + strID + " vào danh sách đăng ký! $");
         Serial.println(" tb7$");
+        delay(1);
       }
 
     } else {
       // Serial.println(" thongbaoHết thời gian! $");
       Serial.println(" tb8$");
+      delay(1);
     }
     cothe = false;
     loa();
     loa();
     loa();
     in1lan = true;
+    // Serial.println(" thongbao ");
+    // Serial.println(" thongbao2 ");
+
+    // break;
   }
 
   // if ((len == 7) && (check.indexOf("remove") == 0)) {
@@ -326,6 +354,7 @@ void dieuKhien() {
 
     Serial.println(" tb9$");
     // Serial.println(" thongbaoMời quét thẻ trong 3s! $");
+    delay(1);
 
 
     getTime = millis();
@@ -352,10 +381,14 @@ void dieuKhien() {
           if (!(checkDK->stateID)) {
             listDKy.remove(i);
             Serial.println(" tb10$");
+            delay(1);
+
             // Serial.println(" thongbaoxóa thẻ " + strID + " khỏi danh sách đăng ký! $");
 
           } else {
             Serial.println(" tb22$");
+            delay(1);
+
             // Serial.println("Trạng thái thẻ không phù hợp để xóa khỏi danh sách đăng ký!");
           }
           break;
@@ -363,17 +396,23 @@ void dieuKhien() {
       }
       if (!inDky1)
         Serial.println(" tb11$");
+      delay(1);
+
       // Serial.println("thẻ " + strID + " không nằm trong danh sách đăng ký, không thể xóa!");
 
     } else {
       // Serial.println(" thongbaoHết thời gian! $");
       Serial.println(" tb8$");
+      delay(1);
     }
     cothe = false;
     loa();
     loa();
     loa();
     in1lan = true;
+    // break;
+    // Serial.println(" thongbao ");
+    //   Serial.println(" thongbao2 ");
   }
 
   if (check.indexOf("max") == 0) {
@@ -388,6 +427,7 @@ void dieuKhien() {
     } else {
       // Serial.println(" thongbaoNhập sai! $");
       Serial.println(" tb12$");
+      delay(1);
     }
 
     loa();
@@ -413,24 +453,28 @@ void access(String check) {
   if (check == "khach") {
     // Serial.println(" thongbao**MỞ CỔNG XE KHÁCH** $");
     Serial.println(" tb13$");
+    delay(1);
   }
   if (check == "dangky") {
     // Serial.println(" thongbao**MỞ CỔNG XE ĐĂNG KÝ** $");
     Serial.println(" tb14$");
+    delay(1);
   }
   digitalWrite(5, HIGH);
   digitalWrite(7, LOW);
   loa();
   //myservo.write(90); //motor moves 90 degree
-  myservo.write(0);   // Open servo
+  myservo.write(90);   // Open servo
   delay(3000);        // Wait for 3 seconds
-  myservo.write(90);  // Close servo
+  myservo.write(0);  // Close servo
   digitalWrite(5, LOW);
 }
 
 void canhbao() {
   // Serial.println(" thongbao**CẢNH BÁO SAI CỔNG** $");
   Serial.println(" tb15$");
+  delay(1);
+
   digitalWrite(5, LOW);
   digitalWrite(7, HIGH);
 
@@ -448,6 +492,8 @@ void tinhTien() {
   int tien = soLan2s * 5;
   // Serial.println(" thongbaoSố tiền phải trả: $");
   Serial.println(" tt" + String(tien) + "$");
+  delay(1);
+
   // Serial.println("k");
 }
 
