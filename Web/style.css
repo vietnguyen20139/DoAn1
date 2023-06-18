@@ -1,0 +1,129 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter";
+  box-sizing: border-box;
+  color: #ffffff;
+}
+
+body {
+  background-image: url(./img/Group\ 6.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+header {
+  height: 114px;
+  /* background: red; */
+  border-bottom: 2px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 0 73px; */
+}
+
+nav{
+    width: 1292px;
+    display: flex;
+    align-items: center;
+}
+img {
+    width: 70px;
+    height: 86px;
+}
+
+h1 {
+    margin-left: 535px;
+}
+
+.price {
+    margin-left: 372px;
+}
+
+section{
+    display: flex;
+    justify-content: center;
+    margin-top: 17px;
+}
+
+.content{
+    width: 1291px;
+    height: 600px;
+    /* background: red; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-left{
+    height: 600px;
+    width: 575px;
+    /* background: black; */
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.name_position{
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 33px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.content-right{
+    width: 601px;
+    height: 531px;
+    /* background: black; */
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-info{
+    width: 492px;
+    height: 138px;
+    background: #505050;
+    box-shadow: 10px 12px 6px 1px rgba(78, 73, 73, 0.38);
+    border-radius: 23px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-name{
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 35px;
+}
+
+.number-vehicles{
+    width: 601px;
+    height: 334px;
+    background: #505050;
+    box-shadow: 10px 12px 6px 1px rgba(78, 73, 73, 0.38);
+    border-radius: 23px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h3{
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 44px;
+}
+
+span{
+    font-weight: 800;
+    font-size: 128px;
+    line-height: 155px;
+}
+
+.number{
+    margin-top: 20px;
+}
