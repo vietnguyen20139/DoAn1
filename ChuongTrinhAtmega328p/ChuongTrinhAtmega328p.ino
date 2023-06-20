@@ -70,8 +70,9 @@ void setup() {
   listDKy.add(checkDK);
 
   // Serial.println("Chế độ cổng hiện tại là cổng vào!");
-  Serial.println(" sx" + String(soXe)+"$");
-  Serial.println(" mx" + String(maxXe)+"$");
+  Serial.println(" sx" + String(soXe) + "$");
+  Serial.println(" mx" + String(maxXe) + "$");
+  Serial.println(" cc" + String(stateCong) + "$");
   // inMax();
 }
 
@@ -243,6 +244,20 @@ void dieuKhien() {
   String check = Serial.readStringUntil('\n');
   // Serial.println(check);
   len = check.length();
+  if ((len == 1) && (check.indexOf('n') == 0)) {
+
+    Serial.println(" sx" + String(soXe) + "$");
+    delay(1);
+    Serial.println(" mx" + String(maxXe) + "$");
+    delay(1);
+    Serial.println(" cc" + String(stateCong) + "$");
+
+    loa();
+    loa();
+    loa();
+    in1lan = true;
+    // break;
+  }
   // if ((len == 2) && (check.indexOf('1') == 0)) {
   if ((len == 1) && (check.indexOf('1') == 0)) {
 
@@ -464,9 +479,9 @@ void access(String check) {
   digitalWrite(7, LOW);
   loa();
   //myservo.write(90); //motor moves 90 degree
-  myservo.write(90);   // Open servo
+  myservo.write(90);  // Open servo
   delay(3000);        // Wait for 3 seconds
-  myservo.write(0);  // Close servo
+  myservo.write(0);   // Close servo
   digitalWrite(5, LOW);
 }
 
