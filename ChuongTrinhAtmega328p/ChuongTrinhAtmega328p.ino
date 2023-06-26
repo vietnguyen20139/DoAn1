@@ -27,7 +27,6 @@ String strID;
 int maxXe = 3;
 int soXe = 0;
 bool isMax = false;
-int len;  //do dai cua chuoi tu esp32 gui qua
 
 //tao 2 cau truc de chua the dang ky va the khach
 class dangky {
