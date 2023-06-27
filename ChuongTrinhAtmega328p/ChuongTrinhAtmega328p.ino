@@ -22,6 +22,7 @@ unsigned long getTime;
 bool cothe = false;
 
 bool in1lan;
+int len;  //do dai cua chuoi tu esp32 gui qua
 
 String strID;
 int maxXe = 3;
